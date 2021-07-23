@@ -45,6 +45,7 @@
         <input type="password" v-model="password" name="password" class="form-control" id="password" placeholder="请输入密码"/>
     </div>
 
+        <span style="color: #ff0000">{{msg}}</span>
     <hr/>
     <div class="form-group" style="text-align: center;"><!--class="form-group"-->
         <input style="width: 200px;height: 40px" id="submit"
@@ -58,23 +59,33 @@
         data:{
             username:'',
             password:'',
+            msg:''
         },
         methods:{
             mysub:function (){
                 var that = this;
-                axios.post("user/login",{
-                    "username":this.username,
-                    "password":this.password
-                }).then(res=>{
-                    console.log(res);
-
-                        if(res.data.msg == 1){
+                if(this.username == null || this.username.trim() == ""){
+                     this.msg = "请先输入用户名！";
+                     document.getElementById("username").focus();
+                }else if(this.password == null || this.password.trim() == ""){
+                     this.msg = "请先输入密码！";
+                     document.getElementById("password").focus();
+                }else{
+                    axios.post("user/login",{
+                        "username":this.username,
+                        "password":this.password
+                    }).then(res=>{
+                        console.log(res);
+                        if(res.data.state == 1){
                             console.log("登录成功");
+                            location.href = "list.html";
                         }else{
                             console.log("失败");
+                            this.msg=res.data.msg;
                         }
 
-                })
+                    })
+                }
             }
         },
     })

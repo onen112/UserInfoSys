@@ -7,10 +7,12 @@ import java.util.List;
 
 @Mapper
 public interface UserMapper {
-    public List<UserInfo> login(String username, String password);
+    UserInfo login(String username, String password);
 
-    public List<UserInfo> test();
+    UserInfo getUserById(int id);
 
 
+    List<UserInfo> getUsers();
 
+    int delUser(int id);
 }

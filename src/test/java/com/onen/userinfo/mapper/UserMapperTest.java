@@ -19,8 +19,9 @@ class UserMapperTest {
         System.out.println(userMapper);
     }
 
+
     @Test
-    void test1() {
-        System.out.println(userMapper.test());
+    void getUsers() {
+        System.out.println(userMapper.getUsers());
     }
 }

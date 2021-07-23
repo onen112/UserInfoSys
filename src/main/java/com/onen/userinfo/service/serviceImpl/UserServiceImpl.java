@@ -1,9 +1,12 @@
 package com.onen.userinfo.service.serviceImpl;
 
 import com.onen.userinfo.mapper.UserMapper;
+import com.onen.userinfo.pojo.UserInfo;
 import com.onen.userinfo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -12,8 +15,18 @@ public class UserServiceImpl implements UserService {
     UserMapper userMapper;
 
     @Override
-    public boolean login(String username, String password) {
+    public UserInfo login(String username, String password) {
 
-        return 1>  0;
+        return userMapper.login(username,password);
+    }
+
+    @Override
+    public List<UserInfo> getUsers() {
+        return userMapper.getUsers();
+    }
+
+    @Override
+    public int delUser(int id) {
+        return userMapper.delUser(id);
     }
 }

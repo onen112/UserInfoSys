@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.onen.userinfo.mapper.UserMapper">
+    <delete id="delUser">
+        delete from userinfo where id=#{id};
+    </delete>
 
     <select id="login" resultType="com.onen.userinfo.pojo.UserInfo">
-        select * from userinfo
+        select * from userinfo where username = #{username} and password  = #{password};
     </select>
     <select id="test" resultType="com.onen.userinfo.pojo.UserInfo">
         select * from userinfo;
+    </select>
+    <select id="getUsers" resultType="com.onen.userinfo.pojo.UserInfo">
+        select id,username,age,name,address,isadmin,qq,email,sex from userinfo
+    </select>
+    <select id="getUserById" resultType="com.onen.userinfo.pojo.UserInfo">
+        select id,username,age,name,address,isadmin,qq,email,sex from userinfo where id=#{id}
     </select>
 </mapper>
