@@ -1,5 +1,6 @@
 package com.onen.userinfo.mapper;
 
+import com.onen.userinfo.pojo.SearchInfo;
 import com.onen.userinfo.pojo.UserInfo;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -12,7 +13,16 @@ public interface UserMapper {
     UserInfo getUserById(int id);
 
 
-    List<UserInfo> getUsers();
+    List<UserInfo> getUsers(SearchInfo searchInfo);
 
     int delUser(int id);
+
+    int addUser(UserInfo userInfo);
+
+    int getUsername(String username);
+
+    int update(UserInfo userInfo);
+
+    int getCount(SearchInfo searchInfo);
+
 }

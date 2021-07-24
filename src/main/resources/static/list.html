@@ -11,6 +11,7 @@
     <!-- 2. jQuery导入，建议使用1.9以上的版本 -->
 <!--    <script src="js/jquery-2.1.0.min.js"></script>-->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
     <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
     <!-- 3. 导入bootstrap的js文件 -->
     <!-- <script src="js/bootstrap.min.js"></script>-->
@@ -27,17 +28,17 @@
         <form class="form-inline">
             <div class="form-group">
                 <label for="ipt_name">姓名</label>
-                <input name="name" type="text" class="form-control" id="ipt_name">
+                <input v-model="name" name="name" type="text" class="form-control" id="ipt_name">
             </div>
             <div class="form-group">
                 <label for="ipt_address">籍贯</label>
-                <input name="address" type="text" class="form-control" id="ipt_address">
+                <input name="address" v-model="address" type="text" class="form-control" id="ipt_address">
             </div>
             <div class="form-group">
                 <label for="ipt_email">邮箱</label>
-                <input name="email" type="email" class="form-control" id="ipt_email">
+                <input name="email" type="email" v-model="email" class="form-control" id="ipt_email">
             </div>
-            <button id="submit1" type="button" class="btn btn-default" onclick="oncli()">查询</button>
+            <button id="submit1" type="button" class="btn btn-default" v-on:click="searchUsers()">查询</button>
         </form>
     </div>
     <div style="float: right;margin-bottom: 15px">
@@ -69,7 +70,7 @@
                     <th>{{item.address}}</th>
                     <th>{{item.qq}}</th>
                     <th>{{item.email}}</th>
-                    <th>{{item.isadmin}}</th>
+                    <th v-text="item.isadmin == 1?'是':'否'"></th>
                     <th>
                         <a class="btn btn-default btn-sm" v-on:click="update(item.id)">修改</a>
                         <a class="btn btn-default btn-sm" v-on:click="del(item.id)">删除</a>
@@ -80,16 +81,16 @@
     </table>
     <div>
         <nav aria-label="Page navigation">
-            <ul id="all" class="pagination">
-                                <li class="active"><a href="javascript:void(0);">1</a></li>
-                                <li><a href="javascript:void(0);">2</a></li>
-                                <li><a href="javascript:void(0);">3</a></li>
-                                <li><a href="javascript:void(0);" aria-label="Next">
-                                    <span aria-hidden="true">&raquo;</span></a>
+            <ul id="all"  class="pagination">
+                <li  v-bind:class="cpage>1?'':'disabled'"><a v-on:click="change(0)"><span aria-hidden="true">&laquo;</span></a></li>
+                <li v-for="n in tpage" v-bind:class="cpage==n? 'active':''"><a v-on:click="changeTo(n)" >{{n}}</a></li>
+                <li v-bind:class="cpage<tpage?'':'disabled'"><a v-on:click="change(1)"><span aria-hidden="true">&raquo;</span></a>
                                 </li>
-                                <span style="font-size: 20px;margin-left: 10px;"> 共 10 条记录，共 1 页
-                                  </span>
+                <span style="font-size: 20px;margin-left: 10px;"> 共 {{tuser}} 条记录，共 {{tpage}}页
+                                </span>
+
             </ul>
+
         </nav>
     </div>
 </div>
@@ -99,14 +100,26 @@
         el:'#app',
         data:{
             userinfos:[],
-
+            name:"",
+            address:"",
+            email:"",
+            cpage:1,
+            psize:3,
+            tuser:0,
+            tpage:0,
         },
         methods:{
-            getUserInfo:function (){
-                axios.get("user/getUsers").then(res=>{
-                    this.userinfos = res.data.users;
-                    console.log(res);
-                })
+            change:function (i){
+                if(i == 0 && this.cpage > 1){
+                    this.changeTo(this.cpage-1);
+                }
+                if(i == 1 && this.cpage < this.tpage){
+                    this.changeTo(this.cpage+1);
+                }
+            },
+            changeTo:function (page){
+                this.cpage = page;
+                this.getUsers();
             },
             update:function (id){
                 location.href="update.html?id="+id;
@@ -123,10 +136,25 @@
                     })
                 }
             },
+            getUsers:function (){
+                axios.get("user/getUsers?" + "name="+this.name + "&email="+this.email+ "&address=" + this.address + "&cpage=" + this.cpage + "&psize=" + this.psize
+                ).then(res=>{
+                    console.log(res.data);
+                    if(res.data.data != null && res.data.data.length != 0){
+                        this.userinfos = res.data.data.users;
+                        this.tuser = res.data.data.tcount;
+                        this.tpage = res.data.data.cpage;
+                    }
+                })
+            },
+            searchUsers:function (){
+                this.cpage = 1;
+                this.getUsers();
+            }
         }
     })
     window.onload = function (){
-        app.getUserInfo();
+        app.getUsers();
     }
 </script>
 </html>

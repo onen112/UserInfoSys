@@ -1,0 +1,15 @@
+package com.onen.userinfo.util;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ResponseUtil<T> {
+    private int state;
+    private String msg;
+    private T data;
+}

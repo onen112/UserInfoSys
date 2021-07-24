@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.onen.userinfo.mapper.UserMapper">
+    <insert id="addUser">
+        insert into userinfo values (null,#{name},#{username},#{password},#{sex},#{age},#{address},#{qq},#{email},#{isadmin})
+
+    </insert>
+    <update id="update">
+        update userinfo set name=#{name},sex=#{sex},age=#{age},address=#{address},qq=#{qq},email=#{email}  where id= #{id};
+    </update>
     <delete id="delUser">
         delete from userinfo where id=#{id};
     </delete>
@@ -13,8 +20,45 @@
     </select>
     <select id="getUsers" resultType="com.onen.userinfo.pojo.UserInfo">
         select id,username,age,name,address,isadmin,qq,email,sex from userinfo
+        <where>
+        <if test="name != ''">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="address != ''">
+            and address like concat ('%',#{address},'%')
+        </if>
+        <if test="email != ''">
+            and email like concat ('%',#{email},'%')
+        </if>
+
+        <if test="isadmin == 0">
+            and isadmin = 0
+        </if>
+        </where>
+        limit #{skipCount},#{psize}
+
     </select>
     <select id="getUserById" resultType="com.onen.userinfo.pojo.UserInfo">
         select id,username,age,name,address,isadmin,qq,email,sex from userinfo where id=#{id}
+    </select>
+    <select id="getUsername" resultType="java.lang.Integer">
+        select count(0) from userinfo where username = #{username}
+    </select>
+    <select id="getCount" resultType="java.lang.Integer">
+        select count(0) from userinfo
+        <where>
+            <if test="name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="address != ''">
+                and address like concat ('%',#{address},'%')
+            </if>
+            <if test="email != ''">
+                and email like concat ('%',#{email},'%')
+            </if>
+            <if test="isadmin == 0">
+                and isadmin = 0
+            </if>
+        </where>
     </select>
 </mapper>

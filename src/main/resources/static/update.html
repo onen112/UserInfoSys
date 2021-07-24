@@ -19,29 +19,29 @@
     <h3 style="text-align: center;">修改用户</h3>
     <div class="form-group">
         <label for="username">登录名：</label>
-        <input type="text" class="form-control" id="username" name="username" readonly="readonly"/>
+        <input  v-bind:value="userInfo.username"  type="text" class="form-control disabled" id="username" name="username" readonly="readonly"/>
     </div>
 
     <div class="form-group">
         <label for="name">姓名：</label>
-        <input type="text" class="form-control" id="name" name="name" v-bind="userInfo.name" placeholder="请输入姓名"/>
+        <input v-model="name" type="text" class="form-control" id="name" name="name" placeholder="请输入姓名"/>
     </div>
 
     <div class="form-group">
         <label>性别：</label>
-        <input id="man" type="radio" name="sex" value="男" checked="checked"/>男
+        <input v-on:change="changeSex(1)" v-bind:checked="userInfo.sex=='男'?'checked':''" id="man" type="radio" name="sex" value="男" checked="checked"/>男
         &nbsp;&nbsp;&nbsp;
-        <input id="women" type="radio" name="sex" value="女"/>女
+        <input v-on:change="changeSex(0)" v-bind:checked="userInfo.sex=='女'?'checked':''" id="women" type="radio" name="sex" value="女"/>女
     </div>
 
     <div class="form-group">
         <label for="age">年龄：</label>
-        <input type="number" class="form-control" id="age" name="age" placeholder="请输入年龄"/>
+        <input v-model="age" type="number" class="form-control" id="age" name="age" placeholder="请输入年龄"/>
     </div>
 
     <div class="form-group">
         <label for="address">籍贯：</label>
-        <select name="address" id="address" class="form-control">
+        <select v-model="address"  name="address" id="address" class="form-control">
             <option value="北京">北京</option>
             <option value="上海">上海</option>
             <option value="广州">广州</option>
@@ -57,23 +57,23 @@
 
     <div class="form-group">
         <label for="qq">QQ：</label>
-        <input type="text" id="qq" class="form-control" name="qq" placeholder="请输入QQ号码"/>
+        <input v-model="qq"  type="text" id="qq" class="form-control" name="qq" placeholder="请输入QQ号码"/>
     </div>
 
     <div class="form-group">
         <label for="email">Email：</label>
-        <input type="text" id="email" class="form-control" name="email" placeholder="请输入邮箱地址"/>
+        <input v-model="email"  type="text" id="email" class="form-control" name="email" placeholder="请输入邮箱地址"/>
     </div>
 
     <div class="form-group">
         <label for="email">管理员：</label>
-        <input id="admin_yes" type="radio" disabled="disabled" name="isadmin" value="是"/>是
+        <input id="admin_yes" v-bind:checked="userInfo.isadmin==1?'checked':''" type="radio" disabled="disabled" name="isadmin" value="是"/>是
         &nbsp;&nbsp;&nbsp;
-        <input id="admin_no" type="radio" disabled="disabled" name="isadmin" value="否" checked="checked"/>否
+        <input id="admin_no" v-bind:checked="userInfo.isadmin==0?'checked':''" type="radio" disabled="disabled" name="isadmin" value="否" checked="checked"/>否
     </div>
 
     <div class="form-group" style="text-align: center">
-        <input id="btn_sub" class="btn btn-primary" type="button" value="提交" onclick="mysub()"/>
+        <input id="btn_sub" class="btn btn-primary" type="button" value="提交" v-on:click="update()"/>
         <input id="btn_reset" class="btn btn-box" type="button" value="重置" onclick="location.href=location.href"/>
         <input id="btn_back" class="btn btn-default" type="button" value="返回" onclick="location.href='list.html'"/>
     </div>
@@ -85,15 +85,77 @@
         el:'#app',
         data:{
             userInfo:{},
+            sex:"男",
+            age:"",
+            address:"北京",
+            name:"",
+            qq:"",
+            email:""
         },
         methods: {
             getUserInfo:function (){
                 axios.get("/user/getUserById?id=" + id).then(res=>{
-                    console.log(res);
+                    if(res.data.state != 1){
+                        alert(res.data.msg);
+                    }else {
+                        this.userInfo = res.data.data;
+                        this.name = this.userInfo.name;
+                        this.sex = this.userInfo.sex;
+                        this.age = this.userInfo.age;
+                        this.address = this.userInfo.address;
+                        this.qq = this.userInfo.qq;
+                        this.email = this.userInfo.email;
+                    }
                 })
+            },
+            update:function (){
+               if(this.name == null && this.name.trim() == ""){
+                    alert("请先输入姓名");
+                }else if(this.qq == null && this.qq.trim() == ""){
+                    alert("请先输入qq");
+                }else if(this.email == null && this.email.trim() == ""){
+                    alert("请先输入email");
+                }else{
+                    axios.post("user/update",{
+                        "id":id,
+                        "name":this.name,
+                        "qq":this.qq,
+                        "email":this.email,
+                        "address":this.address,
+                        "sex":this.sex,
+                        "age":this.age
+                    }).then(res=>{
+                        console.log(res);
+                        if(res.data.state == 1){
+                            console.log(res)
+                            alert("修改成功！");
+                            location.href="list.html"
+                        }else{
+                            alert(res.data.msg)
+                        }
+                    })
+                }
+            },
+            changeSex:function (sex){
+                if(sex == 1){
+                    this.sex = "男";
+                }else{
+                    this.sex = "女";
+                }
+            },
+            changeAdmin:function (isAdm){
+                if(isAdm == 1){
+                    this.isadmin = 1;
+                }else{
+                    this.isadmin = 0;
+                }
             }
         }
     })
+
+    window.onload = function (){
+        app.getUserInfo();
+    }
 </script>
 </body>
 
